@@ -13,12 +13,13 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.apache.ivyde.eclipse.ivynature</nature>
 	</natures>
 	<linkedResources>
 		<link>
 			<name>classes</name>
 			<type>2</type>
-			<location>/home/nathanjent/git/MixtureMining/build/classes</location>
+			<location>C:/home/nathanjent/git/MixtureMining/build/classes</location>
 		</link>
 	</linkedResources>
 </projectDescription>

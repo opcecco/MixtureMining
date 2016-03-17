@@ -1,23 +1,103 @@
 package edu.wright.cs4840.mixturemining;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+import weka.attributeSelection.BestFirst;
+import weka.attributeSelection.CfsSubsetEval;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.AttributeSelection;
 
 public class MMApp {
 
-  public static final long serialVersionUID = 1L;
-  public static void main(String[] args) {
-    try {
-      DataSource source = new DataSource("/some/where/data.arff");
-      Instances data = source.getDataSet();
-      // setting class attribute if the data format does not provide this information
-      // For example, the XRFF format saves the class attribute information as well
-      if (data.classIndex() == -1) {
-        data.setClassIndex(data.numAttributes() - 1);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
+	public static final long serialVersionUID = 1L;
+	private static Instances trainingData;
+	private static Instances testData;
+  
+	public static void main(String[] args) {
+		
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(loadOptions(), args);
+		} catch (ParseException exp) {
+	        System.err.println("Parsing failed. Reason: " + exp.getMessage());
+		}
+		
+		if (cmd.hasOption(Ops.DATA.getName())) {
+			String trainFileName = Ops.DATA.op.getValue(1);
+			String testFileName = Ops.DATA.op.getValue(2);
+			try {
+				// Read accepts cvs, arff, or xrff file extensions
+				trainingData = DataSource.read(trainFileName);
+				testData = DataSource.read(testFileName);
+			} catch (Exception exp) {
+		        System.err.println("File load failed. Reason: " + exp.getMessage());
+			}
+		}
+		
+		// Set class attribute from first row in file.
+		if (trainingData.classIndex() == -1) {
+			trainingData.setClassIndex(0);
+		}
+		if (testData.classIndex() == -1) {
+			testData.setClassIndex(0);
+		}
+		
+		if (cmd.hasOption(Ops.FILTER.getName())) {
+			AttributeSelection attrFilter = new AttributeSelection();
+			CfsSubsetEval evaluator = new CfsSubsetEval();
+			BestFirst search = new BestFirst();
+
+			attrFilter.setEvaluator(evaluator);
+			attrFilter.setSearch(search);
+			try {
+				// set filter for selection from training data
+				attrFilter.setInputFormat(trainingData);
+				
+				// apply filters to data
+				
+				Instances reduced_data_training = Filter.useFilter(trainingData, attrFilter);
+				Instances reduced_data_testing = Filter.useFilter(testData, attrFilter);
+			} catch (Exception exp) {
+		        System.err.println("Attribute selection filter failed. Reason: " + exp.getMessage());
+			}
+		}
+	}
+
+	private enum Ops {
+		DATA(Option.builder("d").argName( "trainingfile testfile" ).hasArg()
+				.desc("load training and test data files").numberOfArgs(2)
+				.longOpt("loaddata").build()),
+		FILTER(Option.builder("f").hasArg()
+				.desc("filter setting: bestfirst, bestlast")
+				.longOpt("filter").build());
+		
+		private Option op;
+		
+		Ops(Option op) {
+			this.op = op;
+		}
+
+		public String getName() {
+			return op.getOpt();
+		}
+	}
+
+	/**
+	 * @return the options for the application
+	 */
+	private static Options loadOptions() {
+		Options ops = new Options();
+		ops.addOption(Ops.DATA.op);
+		ops.addOption(Ops.FILTER.op);
+		return ops;
+	}
 
 }
