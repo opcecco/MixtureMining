@@ -1,5 +1,8 @@
-*.csv
-*.arff
-!/preprocessing/frequencies/*
-!/preprocessing/single_source/*
-/bin/
+*.pdf
+build
+lib
+tools
+.classpath
+.project
+*.swp
+bin
