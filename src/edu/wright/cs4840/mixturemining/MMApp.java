@@ -100,10 +100,10 @@ public class MMApp {
 	}
 
 	private enum Ops {
-		DATA(Option.builder("-d").argName("trainingfile testfile" ).hasArg()
+		DATA(Option.builder("d").argName("trainingfile testfile" ).hasArg()
 				.desc("load training and test data files").numberOfArgs(2)
 				.longOpt("loaddata").build()),
-		FILTER(Option.builder("-f").hasArg()
+		FILTER(Option.builder("f").hasArg()
 				.desc("filter setting: bestfirst, bestlast")
 				.longOpt("filter").build());
 

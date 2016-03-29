@@ -31,16 +31,15 @@
     </target>
 
     <target name="test" depends="build">
-      <java className="edu.wright.cs4840.mixturemining.MMApp" fork="yes" classpathref="build.lib.path">
-        <arg value="-d ${build.dir}preprocessing/mixtures/361_cau_id_2_mix_1000.csv ${build.dir}preprocessing/mixtures/361_cau_id_2_mix_1000.csv"/>
+      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes">
+        <arg value="-d preprocessing/mixtures/361_cau_id_2_mix_1000.csv preprocessing/mixtures/361_cau_id_2_mix_1000.csv"/>
          <classpath>
-           <!--
+            <!--
             <pathelement location="${build.dir}/${jarname}.jar"/>
-            <pathelement path="${build.lib.path}"/>
+            <pathelement path="${lib.dir}"/>
           -->
-           <dirset dir="${build.dir}">
-             <include name="${classes.dir}"/>
-           </dirset>
+            <fileset dir="${lib.dir}" includes="*.jar"/>
+            <pathelement path="${classes.dir}"/>
          </classpath>
       </java>
     </target>
