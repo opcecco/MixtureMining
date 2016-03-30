@@ -28,14 +28,15 @@ public class MMApp {
 
 		File trainFile = new File(args[0]);
 		File testFile = new File(args[1]);
-		System.out.println("Loading training file: " + trainFile);
-		System.out.println("Loading testing file: " + testFile);
+		
+		System.out.println("Loading training file: " + trainFile.getPath());
+		System.out.println("Loading testing file: " + testFile.getPath());
 		if (trainFile.exists() && testFile.exists()) {
 System.out.println("Working Directory = " + System.getProperty("user.dir"));
 			try {
 				// Read accepts cvs, arff, or xrff file extensions
-				trainingData = DataSource.read(trainFile.getCanonicalPath());
-				testData = DataSource.read(testFile.getCanonicalPath());
+				trainingData = DataSource.read(trainFile.getPath());
+				testData = DataSource.read(testFile.getPath());
 			} catch (Exception exp) {
 		        System.err.println("File load failed. Reason: " + exp.getMessage());
 			}
