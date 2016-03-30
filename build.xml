@@ -30,14 +30,10 @@
         <jar jarfile="${build.dir}/${jarname}.jar" basedir="${classes.dir}"/>
     </target>
 
-    <target name="test" depends="build">
-      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes">
-        <arg value="-d preprocessing/mixtures/361_cau_id_2_mix_1000.csv preprocessing/mixtures/361_cau_id_2_mix_1000.csv"/>
+    <target name="test" depends="compile">
+      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
+        <arg line="preprocessing/mixtures/361_cau_id_2_mix_1000.csv preprocessing/mixtures/361_cau_id_2_mix_1000.csv"/>
          <classpath>
-            <!--
-            <pathelement location="${build.dir}/${jarname}.jar"/>
-            <pathelement path="${lib.dir}"/>
-          -->
             <fileset dir="${lib.dir}" includes="*.jar"/>
             <pathelement path="${classes.dir}"/>
          </classpath>

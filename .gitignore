@@ -2,7 +2,6 @@
 build
 lib
 tools
-.classpath
-.project
 *.swp
 bin
+*.class

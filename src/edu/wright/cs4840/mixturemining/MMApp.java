@@ -1,12 +1,6 @@
 package edu.wright.cs4840.mixturemining;
 
 import java.util.Enumeration;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import weka.attributeSelection.BestFirst;
 import weka.attributeSelection.CfsSubsetEval;
 import weka.classifiers.Classifier;
@@ -17,6 +11,8 @@ import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.supervised.attribute.AttributeSelection;
+import java.io.IOException;
+import java.io.File;
 
 public class MMApp {
 
@@ -26,36 +22,32 @@ public class MMApp {
 
 	public static void main(String[] args) {
 
-		CommandLineParser parser = new DefaultParser();
-		CommandLine cmd = null;
-		try {
-			cmd = parser.parse(loadOptions(), args);
-		} catch (ParseException exp) {
-	        System.err.println("Parsing failed. Reason: " + exp.getMessage());
+		for (String arg : args) {
+			System.out.println(arg);
 		}
-		System.out.println("Command: " + cmd);
-		if (cmd.hasOption(Ops.DATA.getName())) {
-			String trainFileName = Ops.DATA.op.getValue(1);
-			String testFileName = Ops.DATA.op.getValue(2);
-			System.out.println("Loading files: " + trainFileName + ' ' + testFileName);
+
+		File trainFile = new File(args[0]);
+		File testFile = new File(args[1]);
+		System.out.println("Loading training file: " + trainFile);
+		System.out.println("Loading testing file: " + testFile);
+		if (trainFile.exists() && testFile.exists()) {
+System.out.println("Working Directory = " + System.getProperty("user.dir"));
 			try {
 				// Read accepts cvs, arff, or xrff file extensions
-				trainingData = DataSource.read(trainFileName);
-				testData = DataSource.read(testFileName);
+				trainingData = DataSource.read(trainFile.getCanonicalPath());
+				testData = DataSource.read(testFile.getCanonicalPath());
 			} catch (Exception exp) {
 		        System.err.println("File load failed. Reason: " + exp.getMessage());
 			}
-		}
 
-		// Set class attribute from first row in file.
-		if (trainingData.classIndex() == -1) {
-			trainingData.setClassIndex(0);
-		}
-		if (testData.classIndex() == -1) {
-			testData.setClassIndex(0);
-		}
+			// Set class attribute from first row in file.
+			if (trainingData.classIndex() == -1) {
+				trainingData.setClassIndex(0);
+			}
+			if (testData.classIndex() == -1) {
+				testData.setClassIndex(0);
+			}
 
-		if (cmd.hasOption(Ops.FILTER.getName())) {
 			AttributeSelection attrFilter = new AttributeSelection();
 			CfsSubsetEval attrEvaluator = new CfsSubsetEval();
 			BestFirst search = new BestFirst();
@@ -98,34 +90,4 @@ public class MMApp {
 			}
 		}
 	}
-
-	private enum Ops {
-		DATA(Option.builder("d").argName("trainingfile testfile" ).hasArg()
-				.desc("load training and test data files").numberOfArgs(2)
-				.longOpt("loaddata").build()),
-		FILTER(Option.builder("f").hasArg()
-				.desc("filter setting: bestfirst, bestlast")
-				.longOpt("filter").build());
-
-		private Option op;
-
-		Ops(Option op) {
-			this.op = op;
-		}
-
-		public String getName() {
-			return op.getOpt();
-		}
-	}
-
-	/**
-	 * @return the options for the application
-	 */
-	private static Options loadOptions() {
-		Options ops = new Options();
-		ops.addOption(Ops.DATA.op);
-		ops.addOption(Ops.FILTER.op);
-		return ops;
-	}
-
 }
