@@ -1,4 +1,4 @@
-require_relative 'ncombinations.rb'
+require_relative 'n_combinations.rb'
 
 def recurse(start_val, end_val, goal, remaining)
   puts "recurse(#{start_val}, #{end_val}, #{goal}, #{remaining})"

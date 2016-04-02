@@ -3,7 +3,7 @@ require 'set'
 require 'Getopt/long'
 
 require_relative 'recurse.rb'
-require_relative 'ncombinations.rb'
+require_relative 'n_combinations.rb'
 
 opt = Getopt::Long.getopts(
   ['--infile', '-i', Getopt::REQUIRED],

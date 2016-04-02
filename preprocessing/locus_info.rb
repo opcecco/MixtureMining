@@ -1,6 +1,6 @@
 require 'Getopt/long'
 
-require_relative 'readfreqs.rb'
+require_relative 'read_freqs.rb'
 
 opt = Getopt::Long.getopts(
   ['--infile', '-i', Getopt::REQUIRED],
@@ -22,7 +22,7 @@ ensure
   samples_file.close if samples_file
 end
 
-lines.shift
+# lines.shift
 
 loci = lines.shift.split(',').drop(2)
 
@@ -41,8 +41,8 @@ if ac
   sample_allele_counts = samples.map{|genotype| genotype.map{|locus| locus.split(' ').size}}
 end
 
-puts "sample allele counts: "
-p sample_allele_counts
+# puts "sample allele counts: "
+# p sample_allele_counts
 
 if af
   freqs = read_freqs(freq_file)
