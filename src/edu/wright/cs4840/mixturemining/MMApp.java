@@ -76,11 +76,6 @@ System.out.println("Working Directory = " + System.getProperty("user.dir"));
 //					Attribute attr = attributes_training.nextElement();
 //					System.out.println(reduced_data_training.attributeStats(attr.index()));
 //				}
-//				Enumeration<Attribute> attributes_testing = reduced_data_testing.enumerateAttributes();
-//				while (attributes_testing.hasMoreElements()) {
-//					Attribute attr = attributes_testing.nextElement();
-//					System.out.println(reduced_data_testing.attributeStats(attr.index()));
-//				}
 
 				// apply classifier
 				NaiveBayes classifier = new NaiveBayes();
@@ -90,10 +85,8 @@ System.out.println("Working Directory = " + System.getProperty("user.dir"));
 				System.out.println(classifier);
 
 				Evaluation evaluator = new Evaluation(reduced_data_training);
-//				for (int i =0; i < reduced_data_training.size(); i++) {
-					evaluator.evaluateModel(classifier, reduced_data_testing);
-//					evaluator.evaluateModelOnce(classifier, reduced_data_testing.get(i));
-//				}
+				evaluator.evaluateModel(classifier, reduced_data_testing);
+
 					
 					// should print out evaluator data
 				System.out.println(evaluator.toSummaryString());
