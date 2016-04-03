@@ -14,6 +14,7 @@ opt = Getopt::Long.getopts(
 )
 
 samples_file = File.open(opt['infile'])
+outfile_name = opt['outfile']
 samples_per_mix = opt['per'].to_i
 seed = opt['seed'].to_i || false
 
@@ -127,17 +128,22 @@ random_mixtures.each { |list_to_mix|
 puts "Writing file: #{opt['outfile']}"
 
 begin
-  outfile = File.open(opt['outfile'], 'w')
-  outfile.puts "Seed: #{seed}"
-  outfile.puts 'name,N,' + loci_names.join(',') + ','
+  outfile_already_exists = File.file?(outfile_name)
+
+  outfile = File.open(outfile_name, 'a')
+  outfile_seedfile = File.open(outfile_name + '.seed.txt','a')
+  outfile_seedfile.puts "Seed: #{seed}"
+  
+  unless outfile_already_exists
+    outfile.puts 'name,N,' + loci_names.join(',') + ','
+  end
 
   mixtures.each_with_index { |mixed_genotype, mixture_index|
-    outfile.puts "#{mixture_names[mixture_index]},#{samples_per_mix}," + mixed_genotype.map{|locus| locus.join(' ')}.join(',')
+    outfile.puts mixture_names[mixture_index] + ',' + samples_per_mix.to_s + 'p,' + mixed_genotype.map{|locus| locus.join(' ')}.join(',')
   }
 rescue Exception => e
-  puts "Failure reading file: #{e}"
+  puts "Failure writing files: #{e}"
 ensure
   outfile.close if outfile
+  outfile_seedfile.close if outfile_seedfile
 end
-
-puts "File writing complete."
