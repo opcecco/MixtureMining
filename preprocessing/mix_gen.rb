@@ -11,8 +11,6 @@ opt = Getopt::Long.getopts(
   ['--seed', '-s', Getopt::OPTIONAL], # random seed
   ['--per', '-p', Getopt::REQUIRED], # number of samples to include per mixture
   ['--mixtures', '-m', Getopt::OPTIONAL],
-  # ['--ac', '-c', Getopt::OPTIONAL], # output number of alleles per locus in ordered columns
-  # ['--af', '-f', Getopt::OPTIONAL], # output sum of allele frequencies per locus
 )
 
 samples_file = File.open(opt['infile'])
@@ -85,10 +83,7 @@ end_val = samples.size - 1
 goal = 0
 
 sorted_rand.each {|new_rand|
-  # puts "New rand: #{new_rand}, max: #{max_combinations}, n_comb:#{n_combinations(end_val + 1 - start_val, samples_per_mix - 1)}"
-  # goal = new_rand - (max_combinations - (max_combinations - n_combinations(end_val + 1 - start_val, samples_per_mix - 1)))
   result = recurse(0, end_val, new_rand, samples_per_mix)
-  # start_val = result['start']
   random_mixtures.push result['mixture']
 }
 
@@ -97,9 +92,7 @@ def make_mixture(genotype_list, to_mix)
 
   locus_count = genotype_list[0].size / 2
 
-  # puts "locus_count: #{locus_count}"
   (0...locus_count).each { |locus_index|
-    # puts "locus index: #{locus_index}"
 
     # use Set to avoid duplicate alleles - we only care about unique alleles
     locus_alleles = Set.new
@@ -107,13 +100,9 @@ def make_mixture(genotype_list, to_mix)
     # assumes one allele per column; two columns per locus;
     # add both allele columns to the locus set
     to_mix.each { |genotype_index|
-      # puts "\tAdding: #{genotype_list[genotype_index][locus_index * 2]}"
       locus_alleles.add genotype_list[genotype_index][locus_index * 2]
-      # puts "\tAdding: #{genotype_list[genotype_index][locus_index * 2 + 1]}"
       locus_alleles.add genotype_list[genotype_index][locus_index * 2 + 1]
     }
-
-    # puts "\tNew locus: #{locus_alleles.to_a.sort{ |a, b| a.to_f <=> b.to_f }}"
 
     # return an array rather than a set, but sort it first for readability
     new_mix.push locus_alleles.to_a.sort{ |a, b| a.to_f <=> b.to_f }
@@ -122,9 +111,6 @@ def make_mixture(genotype_list, to_mix)
   return new_mix
 
 end #make_mixture
-
-# puts "random mixtures:"
-# p random_mixtures
 
 # make mixtures and names in parallel arrays
 random_mixtures.each { |list_to_mix|
@@ -136,9 +122,6 @@ random_mixtures.each { |list_to_mix|
   # making unique names for mixtures - intended for 1-column-wide in a CSV file, so no commas
   mixture_names.push list_to_mix.map{|i| sample_names[i]}.join('+')
 }
-
-# puts "Mixtures:"
-# p mixtures
 
 # write to file in overwrite mode
 puts "Writing file: #{opt['outfile']}"

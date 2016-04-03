@@ -22,8 +22,6 @@ ensure
   samples_file.close if samples_file
 end
 
-# lines.shift
-
 loci = lines.shift.split(',').drop(2)
 
 samples = Array.new
@@ -40,9 +38,6 @@ lines.each {|line|
 if ac
   sample_allele_counts = samples.map{|genotype| genotype.map{|locus| locus.split(' ').size}}
 end
-
-# puts "sample allele counts: "
-# p sample_allele_counts
 
 if af
   freqs = read_freqs(freq_file)
