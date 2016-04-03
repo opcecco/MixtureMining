@@ -25,6 +25,8 @@ def read_freqs(filename)
     }
   }
 
+  puts "Frequencies read for alleles:"
+
   freqs.each_pair{|key,val|
     puts "#{key} => [#{val.keys.sort{|a,b| a.to_f <=> b.to_f}.join(',')}]"
   }
