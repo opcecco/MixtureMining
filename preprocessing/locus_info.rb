@@ -56,7 +56,7 @@ puts "Writing file: #{opt['outfile']}"
 
 begin
   outfile = File.open(opt['outfile'], 'w')
-  outfile.write 'name,N,' + loci.join(',')
+  outfile.write 'name,N'
 
   if ac
     outfile.write ',' + loci.map{|locus| locus + " allele count"}.join(',')
@@ -69,7 +69,10 @@ begin
   outfile.write "\n"
 
   lines.each_with_index { |line, line_index|
-    outfile.write line
+    line_split = line.split(',')
+    name = line_split.shift
+    count = line_split.shift
+    outfile.write name + ',' + count
     if ac
       outfile.write ',' + sample_allele_counts[line_index].join(',')
     end
