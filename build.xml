@@ -32,7 +32,7 @@
 
     <target name="test" depends="compile">
       <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
-        <arg line="preprocessing/mixtures/361_cau_id_2_mix_1000.csv preprocessing/mixtures/361_cau_id_2_mix_1000.csv"/>
+        <arg line="preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.test.csv preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv 10"/>
          <classpath>
             <fileset dir="${lib.dir}" includes="*.jar"/>
             <pathelement path="${classes.dir}"/>
