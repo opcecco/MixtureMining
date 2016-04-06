@@ -29,17 +29,40 @@
     </target>
 
     <target name="build" depends="compile">
+    	<pathconvert property="classpath.name" pathsep=" ">
+		<path refid="build.lib.path" />
+		<mapper>
+			<chainedmapper>
+				<flattenmapper />
+				<globmapper from="*.jar" to="lib/*.jar" />
+			</chainedmapper>
+		</mapper>
+	</pathconvert>
         <jar jarfile="${build.dir}/${jarname}.jar" basedir="${classes.dir}">
             <manifest>
 				<attribute name="Main-Class" value="edu.wright.cs4840.mixturemining.MMApp"/>
+            	<attribute name="Class-Path" value="${classpath.name}"/>
             </manifest>
     	</jar>
     </target>
 
-    <target name="test" depends="compile">
+    <target name="test-bayes" depends="compile">
       <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
         <arg line="preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.test.csv 
-        	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv 10"/>
+        	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv 
+        	10 bayes"/>
+         <classpath>
+            <fileset dir="${lib.dir}" includes="*.jar"/>
+            <pathelement path="${classes.dir}"/>
+         </classpath>
+      </java>
+    </target>
+
+    <target name="test-cluster" depends="compile">
+      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
+        <arg line="preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.test.csv 
+        	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv 
+        	3 cluster"/>
          <classpath>
             <fileset dir="${lib.dir}" includes="*.jar"/>
             <pathelement path="${classes.dir}"/>
