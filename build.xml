@@ -33,6 +33,15 @@
             <manifest>
 				<attribute name="Main-Class" value="edu.wright.cs4840.mixturemining.MMApp"/>
             </manifest>
+        	<fileset dir="${src.dir}"/>
+        	<restrict>
+        	     <name name="**/*.class"/>
+        	     <archives>
+        	       <zips>
+        	         <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        	       </zips>
+        	     </archives>
+    	    </restrict>
     	</jar>
     </target>
 
