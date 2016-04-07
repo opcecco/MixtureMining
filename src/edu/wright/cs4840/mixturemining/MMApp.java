@@ -5,6 +5,7 @@ import java.util.Enumeration;
 
 import weka.attributeSelection.CfsSubsetEval;
 import weka.attributeSelection.GreedyStepwise;
+import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.evaluation.Evaluation;
 import weka.core.Attribute;
@@ -12,6 +13,7 @@ import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.supervised.attribute.AttributeSelection;
+import weka.filters.unsupervised.attribute.PrincipalComponents;
 
 public class MMApp {
 
@@ -20,19 +22,40 @@ public class MMApp {
 	private static Instances testData;
 
 	public static void main(String[] args) {
-
-		for (String arg : args) {
-			System.out.println(arg);
+		File trainFile = null;
+		File testFile = null;
+		int numAttributes = 10;
+		String filter = "AS";
+		String classer = "BS";
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].startsWith("-")) {
+				if (args[i].equals("-help") || args[i].equals("-h") || args[i].equals("-?")) { 
+					System.out.println(
+							"Specify training and testing files: ex. java -jar MixtureMining.jar train.csv test.csv\n"
+							+ "-f : specify filter { AS : Attribute Selection, PC : Principle Component analysis }\n"
+							+ "-n : specify number of attributes to retain\n"
+							+ "-c : specify classifier { BS : Naive Bayes, }");
+					return;
+				} else if (args[i].equals("-f")) { 
+					filter = args[++i];
+				} else if (args[i].equals("-c")) {
+					classer = args[++i];
+				} else if (args[i].equals("-n")) {
+					numAttributes = Integer.parseInt(args[++i]);
+				}
+			} else {
+				trainFile = new File(args[i++]);
+				testFile = new File(args[i]);
+			}
 		}
-
-		File trainFile = new File(args[0]);
-		File testFile = new File(args[1]);
-		int numToSelect = Integer.parseInt(args[2]);
+		if (trainFile == null || testFile == null) {
+			System.err.println("Please specify training and testing files. ex. java -jar MixtureMining.jar train.csv test.csv");
+			return;
+		}
 		
 		System.out.println("Loading training file: " + trainFile.getPath());
 		System.out.println("Loading testing file: " + testFile.getPath());
 		if (trainFile.exists() && testFile.exists()) {
-System.out.println("Working Directory = " + System.getProperty("user.dir"));
 			try {
 				// Read accepts cvs, arff, or xrff file extensions
 				trainingData = DataSource.read(trainFile.getPath());
@@ -48,50 +71,74 @@ System.out.println("Working Directory = " + System.getProperty("user.dir"));
 			if (testData.classIndex() == -1) {
 				testData.setClassIndex(1);
 			}
-
-			AttributeSelection attrFilter = new AttributeSelection();
-			CfsSubsetEval attrEvaluator = new CfsSubsetEval();
+			Instances reduced_data_training = null;
+			Instances reduced_data_testing = null;
 			
-			GreedyStepwise search = new GreedyStepwise();
+			if (filter.equalsIgnoreCase("PC")) {
+				PrincipalComponents pcaFilter = new PrincipalComponents();
+				pcaFilter.setMaximumAttributes(numAttributes);
+				try {
+					pcaFilter.setInputFormat(trainingData);
+					reduced_data_training = Filter.useFilter(trainingData, pcaFilter);
+					reduced_data_testing = Filter.useFilter(testData, pcaFilter);
+				} catch (Exception exp) {
+			        System.err.println("PCA filter failed. Reason: " + exp.getMessage());
+				}
+			} else if (filter.equalsIgnoreCase("AS")){
+ 				AttributeSelection attrFilter = new AttributeSelection();
+				CfsSubsetEval attrEvaluator = new CfsSubsetEval();
+				
+				GreedyStepwise search = new GreedyStepwise();
+				
+				search.setNumToSelect(numAttributes);
+				search.setConservativeForwardSelection(false);
+				search.setSearchBackwards(false);
+				search.setGenerateRanking(true);
+				
+				attrFilter.setEvaluator(attrEvaluator);
+				attrFilter.setSearch(search);
+				try {
+					// set filter for selection from training data
+					attrFilter.setInputFormat(trainingData);
+	
+					// apply filters to data
+					reduced_data_training = Filter.useFilter(trainingData, attrFilter);
+					reduced_data_testing = Filter.useFilter(testData, attrFilter);
+						
+				} catch (Exception exp) {
+			        System.err.println("Attribute selection filter failed. Reason: " + exp.getMessage());
+				}
+			}
 			
-			search.setNumToSelect(numToSelect);
-			search.setConservativeForwardSelection(false);
-			search.setSearchBackwards(false);
-			search.setGenerateRanking(true);
+			System.out.println(reduced_data_training.toSummaryString());
 			
-			attrFilter.setEvaluator(attrEvaluator);
-			attrFilter.setSearch(search);
-			try {
-				// set filter for selection from training data
-				attrFilter.setInputFormat(trainingData);
-
-				// apply filters to data
-				Instances reduced_data_training = Filter.useFilter(trainingData, attrFilter);
-				Instances reduced_data_testing = Filter.useFilter(testData, attrFilter);
-
-				// should print out selected features
-				System.out.println(reduced_data_training.toSummaryString());
 //				Enumeration<Attribute> attributes_training = reduced_data_training.enumerateAttributes();
 //				while (attributes_training.hasMoreElements()) {
 //					Attribute attr = attributes_training.nextElement();
 //					System.out.println(reduced_data_training.attributeStats(attr.index()));
 //				}
+				
+			Classifier classifier = null;
+			if (classer.equalsIgnoreCase("L")) {
+				
+			} else if (classer.equalsIgnoreCase("BS") || classer == null) {
+				classifier = new NaiveBayes();
+				try {
+					classifier.buildClassifier(reduced_data_training);
+				} catch (Exception exp) {
+			        System.err.println("Bayes classification failed. Reason: " + exp.getMessage());
+				}
+			}
 
-				// apply classifier
-				NaiveBayes classifier = new NaiveBayes();
-				classifier.buildClassifier(reduced_data_training);
+			System.out.println(classifier);
 
-				// should print out classifier data
-				System.out.println(classifier);
-
-				Evaluation evaluator = new Evaluation(reduced_data_training);
+			Evaluation evaluator = null;
+			try {
+				evaluator = new Evaluation(reduced_data_training);
 				evaluator.evaluateModel(classifier, reduced_data_testing);
-
-					
-					// should print out evaluator data
 				System.out.println(evaluator.toSummaryString());
 			} catch (Exception exp) {
-		        System.err.println("Attribute selection filter failed. Reason: " + exp.getMessage());
+		        System.err.println("Evaluation failed. Reason: " + exp.getMessage());
 			}
 		}
 	}

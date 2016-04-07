@@ -33,13 +33,41 @@
             <manifest>
 				<attribute name="Main-Class" value="edu.wright.cs4840.mixturemining.MMApp"/>
             </manifest>
+        	<fileset dir="${src.dir}"/>
+        	<restrict>
+        	     <name name="**/*.class"/>
+        	     <archives>
+        	       <zips>
+        	         <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        	       </zips>
+        	     </archives>
+    	    </restrict>
     	</jar>
     </target>
 
-    <target name="test" depends="compile">
+    <target name="test-attribute_selection_bayes" depends="compile">
       <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
         <arg line="preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.test.csv 
-        	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv 10"/>
+        	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv
+        	-f AS
+        	-c BS
+        	-n 10
+      	"/>
+         <classpath>
+            <fileset dir="${lib.dir}" includes="*.jar"/>
+            <pathelement path="${classes.dir}"/>
+         </classpath>
+      </java>
+    </target>
+
+    <target name="test-pca_bayes" depends="compile">
+      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
+        <arg line="preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.test.csv 
+        	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv
+        	-f PC
+        	-c BS
+        	-n 10
+      	"/>
          <classpath>
             <fileset dir="${lib.dir}" includes="*.jar"/>
             <pathelement path="${classes.dir}"/>
