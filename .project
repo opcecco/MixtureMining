@@ -19,7 +19,7 @@
 		<link>
 			<name>classes</name>
 			<type>2</type>
-			<location>C:/home/nathanjent/git/MixtureMining/build/classes</location>
+			<location>build/classes</location>
 		</link>
 	</linkedResources>
 </projectDescription>
