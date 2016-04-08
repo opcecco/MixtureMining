@@ -1,4 +1,4 @@
-require 'Getopt/long'
+require 'getopt/long'
 
 require_relative 'read_freqs.rb'
 
