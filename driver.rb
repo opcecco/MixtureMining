@@ -35,19 +35,28 @@ training_filename = String.new
     training_filename = mix_filename + ".processed.csv"
   end
 
-  (min..max).each {|index|
-    to_eval = "ruby preprocessing/mix_gen.rb -i #{SINGLESOURCE} -o #{mix_filename} -p #{index} -m #{mixture_count}"
-    puts "Running: '#{to_eval}'"
-    output = `#{to_eval}`
-    puts output
-  }
+  if File.exists?(mix_filename)
+    puts "Mixtures file already exists: #{mix_filename}"
+  else
+    (min..max).each {|index|
+      to_eval = "ruby preprocessing/mix_gen.rb -i #{SINGLESOURCE} -o #{mix_filename} -p #{index} -m #{mixture_count}"
+      puts "Running: '#{to_eval}'"
+      output = `#{to_eval}`
+      puts output
+    }
+  end #unless
 
   file_to_generate = mix_filename + ".processed.csv"
 
-  to_eval = "ruby preprocessing/locus_info.rb -i #{mix_filename} -o #{file_to_generate} -a #{FREQUENCIES} -c"
-  puts "Running: '#{to_eval}'"
-  output = `#{to_eval}`
-  puts output
+  if File.exists?(file_to_generate)
+    puts "Preprocessed file already exists: #{file_to_generate}"
+  else
+
+    to_eval = "ruby preprocessing/locus_info.rb -i #{mix_filename} -o #{file_to_generate} -a #{FREQUENCIES} -c"
+    puts "Running: '#{to_eval}'"
+    output = `#{to_eval}`
+    puts output
+  end
 }
 
 to_eval = "#{JAVA_CALL} #{training_filename} #{testing_filename} #{java_args}"
