@@ -8,11 +8,16 @@
 
 SINGLESOURCE = "preprocessing/single_source/361_caucasian_identifiler_loci.csv"
 FREQUENCIES = "preprocessing/frequencies/361_cau.csv"
-JAVA_CALL = "java -cp \".;./weka.jar\" edu.wright.cs4840.mixturemining.MMApp"
+JAVA_CALL = "java -jar MixtureMining.jar"
 
-puts "Usage: > ruby driver.rb min max mixture_count features_to_keep"
+puts "Usage: > ruby driver.rb min max mixture_count [-n features] [-c BS] [-f AS | PC]"
 
-min, max, mixture_count, features_to_keep = ARGV
+min = ARGV[0]
+max = ARGV[1]
+mixture_count = ARGV[2]
+
+p ARGV
+java_args = (3...ARGV.size).map{|i| ARGV[i]}.join(" ")
 
 mix_base_filename = "#{min}-#{max}_#{mixture_count}ea"
 
@@ -45,7 +50,7 @@ training_filename = String.new
   puts output
 }
 
-to_eval = "#{JAVA_CALL} #{training_filename} #{testing_filename} #{features_to_keep}"
+to_eval = "#{JAVA_CALL} #{training_filename} #{testing_filename} #{java_args}"
 puts "Running: '#{to_eval}'"
 `#{to_eval}`
 output = `#{to_eval}`
