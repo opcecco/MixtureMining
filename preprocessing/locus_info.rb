@@ -1,4 +1,4 @@
-require 'Getopt/long'
+require 'getopt/long'
 
 require_relative 'read_freqs.rb'
 
@@ -59,7 +59,7 @@ begin
   outfile.write 'name,N'
 
   if ac
-    outfile.write ',' + loci.map{|locus| locus + " allele count"}.join(',')
+    outfile.write ',Max allele count,' + loci.map{|locus| locus + " allele count"}.join(',')
   end
 
   if af
@@ -74,7 +74,7 @@ begin
     count = line_split.shift
     outfile.write name + ',' + count
     if ac
-      outfile.write ',' + sample_allele_counts[line_index].join(',')
+      outfile.write ',' + sample_allele_counts[line_index].max.to_s + ',' + sample_allele_counts[line_index].join(',')
     end
 
     if af
