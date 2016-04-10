@@ -61,6 +61,5 @@ training_filename = String.new
 
 to_eval = "#{JAVA_CALL} #{training_filename} #{testing_filename} #{java_args}"
 puts "Running: '#{to_eval}'"
-`#{to_eval}`
 output = `#{to_eval}`
 puts output

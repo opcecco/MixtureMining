@@ -111,7 +111,7 @@ public class MMApp {
 					} catch (Exception exp) {
 				        System.err.println("PCA filter failed. Reason: " + exp.getMessage());
 					}
-				} else if (filter.equalsIgnoreCase("AS")){
+				} else if (filter.startsWith("AS")){
 	 				AttributeSelection attrFilter = new AttributeSelection();
 					CfsSubsetEval attrEvaluator = new CfsSubsetEval();
 					
@@ -119,7 +119,12 @@ public class MMApp {
 					
 					search.setNumToSelect(numAttributes);
 					search.setConservativeForwardSelection(false);
-					search.setSearchBackwards(false);
+					
+					if (filter.equalsIgnoreCase("ASB"))
+						search.setSearchBackwards(true);
+					else
+						search.setSearchBackwards(false);
+					
 					search.setGenerateRanking(true);
 					
 					attrFilter.setEvaluator(attrEvaluator);
