@@ -75,7 +75,7 @@ public class MMApp {
 			System.out.println("Loading testing file: " + testFile.getPath());
 			if (trainFile.exists() && testFile.exists()) {
 				try {
-					// Read accepts cvs, arff, or xrff file extensions
+					// Read accepts csv, arff, or xrff file extensions
 					trainingData = DataSource.read(trainFile.getPath());
 					testData = DataSource.read(testFile.getPath());
 				} catch (Exception exp) {
@@ -102,7 +102,7 @@ public class MMApp {
 					} catch (Exception exp) {
 				        System.err.println("PCA filter failed. Reason: " + exp.getMessage());
 					}
-				} else if (filter.equalsIgnoreCase("AS")){
+				} else if (filter.startsWith("AS")){
 	 				AttributeSelection attrFilter = new AttributeSelection();
 					CfsSubsetEval attrEvaluator = new CfsSubsetEval();
 					
@@ -110,7 +110,12 @@ public class MMApp {
 					
 					search.setNumToSelect(numAttributes);
 					search.setConservativeForwardSelection(false);
-					search.setSearchBackwards(false);
+					
+					if (filter.equalsIgnoreCase("ASB"))
+						search.setSearchBackwards(true);
+					else
+						search.setSearchBackwards(false);
+					
 					search.setGenerateRanking(true);
 					
 					attrFilter.setEvaluator(attrEvaluator);
