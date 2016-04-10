@@ -29,7 +29,7 @@
     </target>
 
     <target name="build" depends="compile">
-        <jar jarfile="${build.dir}/${jarname}.jar" basedir="${classes.dir}">
+        <jar jarfile="${jarname}.jar" basedir="${classes.dir}">
             <manifest>
 				<attribute name="Main-Class" value="edu.wright.cs4840.mixturemining.MMApp"/>
             </manifest>
@@ -45,13 +45,14 @@
     	</jar>
     </target>
 
-    <target name="test-attribute_selection_bayes" depends="compile">
-      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
+    <target name="test" depends="compile">
+      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="true" fork="yes" dir="${basedir}">
         <arg line="preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.test.csv 
         	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv
         	-f AS
         	-c BS
         	-n 10
+        	-showcurve
       	"/>
          <classpath>
             <fileset dir="${lib.dir}" includes="*.jar"/>
@@ -60,22 +61,62 @@
       </java>
     </target>
 
-    <target name="test-pca_bayes" depends="compile">
-      <java className="edu.wright.cs4840.mixturemining.MMApp" failonerror="yes" fork="yes" dir="${basedir}">
-        <arg line="preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.test.csv 
-        	preprocessing/mixes_preprocessed/361_cau_id_2_3_4_mix_1000.train.csv
-        	-f PC
-        	-c BS
-        	-n 10
-      	"/>
-         <classpath>
-            <fileset dir="${lib.dir}" includes="*.jar"/>
-            <pathelement path="${classes.dir}"/>
-         </classpath>
-      </java>
+    <target name="test-attribute_selection_bayes" depends="build">
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 1000 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 50 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 100 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 500 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 5000 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 1000 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 50 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 100 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 500 -n 5 -f AS -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 5000 -n 5 -f AS -c BS"/>
+        </exec>
+    </target>
+
+    <target name="test-pca_bayes" depends="build">
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 50 -n 3 -f PC -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 100 -n 3 -f PC -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 4 200 -n 3 -f PC -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 50 -n 4 -f PC -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 100 -n 4 -f PC -c BS"/>
+        </exec>
+        <exec executable="ruby.exe" failonerror="true">
+          <arg line="driver.rb 2 5 200 -n 4 -f PC -c BS"/>
+        </exec>
     </target>
 
     <target name="clean">
+    	<delete file="${jarname}.jar"/>
         <delete dir="${build.dir}"/>
         <delete dir="${lib.dir}"/>
         <delete dir="${tools.dir}"/>
