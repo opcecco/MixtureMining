@@ -3,7 +3,6 @@ package edu.wright.cs4840.mixturemining;
 import java.awt.BorderLayout;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,7 +21,6 @@ import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.supervised.attribute.AttributeSelection;
 import weka.filters.unsupervised.attribute.PrincipalComponents;
-import weka.gui.graphvisualizer.GraphVisualizer;
 import weka.gui.visualize.PlotData2D;
 import weka.gui.visualize.ThresholdVisualizePanel;
 
@@ -33,48 +31,58 @@ public class MMApp {
 	private static Instances testData;
 
 	public static void main(String[] args) {
+
+		// Handle command line options
 		File trainFile = null;
 		File testFile = null;
 		boolean showCurve = false;
+		boolean kernelEstimator = false;
+		int numAttributes = 10;
+		String filter = "AS";
+		String classer = "BS";
+		if (args.length == 0) {
+			args = new String[] {"-help"};
+		}
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].startsWith("-")) {
+				if (args[i].equals("-help") || args[i].equals("-h") || args[i].equals("-?")) { 
+					System.out.println(
+							"Specify training and testing files: ex. java -jar MixtureMining.jar train.csv test.csv\n"
+							+ "-f : specify filter { AS : Attribute Selection, PC : Principle Component analysis }\n"
+							+ "-n : specify number of attributes to retain\n"
+							+ "-c : specify classifier { BS : Naive Bayes, }");
+					return;
+				} else if (args[i].equals("-f")) { 
+					filter = args[++i];
+				} else if (args[i].equals("-c")) {
+					classer = args[++i];
+				} else if (args[i].equals("-n")) {
+					numAttributes = Integer.parseInt(args[++i]);
+				} else if (args[i].equals("-showcurve")) {
+					showCurve = true;
+				} else if (args[i].equals("-k")) {
+					kernelEstimator = true;
+				}
+			} else {
+				trainFile = new File(args[i++]);
+				testFile = new File(args[i]);
+			}
+		}
+		if (trainFile == null || testFile == null) {
+			System.err.println("Please specify both training and testing files. ex. java -jar MixtureMining.jar train.csv test.csv");
+			return;
+		}
 		try(FileWriter fw = new FileWriter("results.txt", true);
 			    BufferedWriter bw = new BufferedWriter(fw);
 			    PrintWriter results = new PrintWriter(bw))
 		{
-			int numAttributes = 10;
-			String filter = "AS";
-			String classer = "BS";
-			for (int i = 0; i < args.length; i++) {
-				if (args[i].startsWith("-")) {
-					if (args[i].equals("-help") || args[i].equals("-h") || args[i].equals("-?")) { 
-						System.out.println(
-								"Specify training and testing files: ex. java -jar MixtureMining.jar train.csv test.csv\n"
-								+ "-f : specify filter { AS : Attribute Selection, PC : Principle Component analysis }\n"
-								+ "-n : specify number of attributes to retain\n"
-								+ "-c : specify classifier { BS : Naive Bayes, }");
-						return;
-					} else if (args[i].equals("-f")) { 
-						filter = args[++i];
-					} else if (args[i].equals("-c")) {
-						classer = args[++i];
-					} else if (args[i].equals("-n")) {
-						numAttributes = Integer.parseInt(args[++i]);
-					} else if (args[i].equals("-showcurve")) {
-						showCurve = true;
-					}
-				} else {
-					trainFile = new File(args[i++]);
-					testFile = new File(args[i]);
-				}
-			}
-			if (trainFile == null || testFile == null) {
-				System.err.println("Please specify training and testing files. ex. java -jar MixtureMining.jar train.csv test.csv");
-				return;
-			}
-			
 			System.out.println("Loading training file: " + trainFile.getPath());
 			System.out.println("Loading testing file: " + testFile.getPath());
 			if (trainFile.exists() && testFile.exists()) {
 				try {
+					//Print file name for mixture information
+					results.println(trainFile.getName());
+					
 					// Read accepts cvs, arff, or xrff file extensions
 					trainingData = DataSource.read(trainFile.getPath());
 					testData = DataSource.read(testFile.getPath());
@@ -92,6 +100,7 @@ public class MMApp {
 				Instances reduced_data_training = null;
 				Instances reduced_data_testing = null;
 				
+				// Feature selection
 				if (filter.equalsIgnoreCase("PC")) {
 					PrincipalComponents pcaFilter = new PrincipalComponents();
 					pcaFilter.setMaximumAttributes(numAttributes);
@@ -127,8 +136,9 @@ public class MMApp {
 				        System.err.println("Attribute selection filter failed. Reason: " + exp.getMessage());
 					}
 				}
-				
-				results.println(reduced_data_training.toSummaryString());
+				// write results of feature selection
+				results.println("Num attributes: " + reduced_data_training.numAttributes());
+//				results.println(reduced_data_training.toSummaryString());
 				
 	//				Enumeration<Attribute> attributes_training = reduced_data_training.enumerateAttributes();
 	//				while (attributes_training.hasMoreElements()) {
@@ -141,6 +151,7 @@ public class MMApp {
 					
 				} else if (classer.equalsIgnoreCase("BS") || classer == null) {
 					classifier = new NaiveBayes();
+					((NaiveBayes) classifier).setUseKernelEstimator(kernelEstimator);
 					try {
 						classifier.buildClassifier(reduced_data_training);
 					} catch (Exception exp) {
@@ -148,15 +159,21 @@ public class MMApp {
 					}
 				}
 	
-				results.println(classifier);
+//				results.println(classifier);
 	
 				Evaluation evaluator = null;
 				try {
 					evaluator = new Evaluation(reduced_data_training);
 					evaluator.evaluateModel(classifier, reduced_data_testing);
-					results.println(evaluator.toClassDetailsString());
-					results.println(evaluator.toMatrixString());
-					results.println(evaluator.toSummaryString());
+//					results.println(evaluator.toClassDetailsString());
+//					results.println(evaluator.toMatrixString());
+//					results.println(evaluator.toSummaryString());
+					for (int j = 0; j < reduced_data_testing.numClasses(); j++) {
+						results.println(reduced_data_testing.classAttribute().value(j) 
+								+ " "
+								+ evaluator.truePositiveRate(j)
+								+ "% true positive rate");
+					}
 					if (showCurve) {
 						// generate curve
 					    ThresholdCurve tc = new ThresholdCurve();
