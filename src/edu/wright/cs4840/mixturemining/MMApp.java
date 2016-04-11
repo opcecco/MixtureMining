@@ -78,13 +78,17 @@ public class MMApp {
 			    PrintWriter results = new PrintWriter(bw))
 		{
 			results.println("====Test Run====" + new Date().toString());
-			results.println();
+			
+			results.println("Filter: " + filter 
+					+ "\nClassifier: " + classer 
+					+ "\nMax attributes: " + numAttributes);
+			
 			System.out.println("Loading training file: " + trainFile.getPath());
 			System.out.println("Loading testing file: " + testFile.getPath());
 			if (trainFile.exists() && testFile.exists()) {
 				try {
 					//Print file name for mixture information
-					results.println(trainFile.getName());
+					results.println("Mixture set: " + trainFile.getName().split("\\.")[0]);
 					
 					// Read accepts cvs, arff, or xrff file extensions
 					trainingData = DataSource.read(trainFile.getPath());
