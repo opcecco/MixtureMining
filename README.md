@@ -7,7 +7,7 @@ Final project for Wright State University CS4840/6840, Intro to Machine Learning
 * Nathan Jent, jent.2@wright.edu
 
 ## License
-TODO
+GNU GPL v3 (see separate license file). Weka, which this work references, is also licensed under GNU GPL v3.
 
 ## About
 
@@ -17,24 +17,28 @@ The MixtureMining project is intended to explore methods for estimating/inferrin
   * a genotype "mixing" program for generating simulated mixed samples (mix_gen.rb)
   * a feature extraction/creation program for real or simulated mixed samples (locus_info.rb)
 * Feature filtering
-TODO
+  * Utilizes forward feature selector, backwards feature selector, or principle components
 * Estimation
-TODO
+  * Utilizes a naive Bayesian classifier for prediction
 
 ## System requirements
 * [Ruby interpreter](https://www.ruby-lang.org/en/)
   * Required Gems (install using 'gem install <gem_name>')
     * getopt
-* Java JDK
-TODO: Version number and any necessary libraries
+* JRE 1.8
 
 ## Build instructions
 * Preprocessing:
 None (pure Ruby)
 * Filtering/estimation:
-TODO
+  * Use the "build" feature in the provided Ant build.xml file.
+  * Internet connection required for downloading Weka.
 
 ## Run instructions
+* Build the JAR file, then run the command:
+```
+> ruby driver.rb min_contributors max_contributors mixtures_per_class -f [AS/ASB/PC] -n features_to_keep -c BS'
+```
 
 ### Preprocessing
 *All paths relative to ./preprocessing/*
@@ -50,7 +54,6 @@ Ex.
 ```
 
 2. Feature creation
-  * **NOTE: _Currently requires manual "stitching" together of multiple mixture files. Remove seed value and all but top-most header from files when stitching together._**
   2.1 Allele frequency feature creation: uses [--aftable aftable.csv] flag, requires allele frequency table to be passed to script.
   2.2 Allele counting feature creation: uses [--ac] flag
 ```
@@ -61,19 +64,10 @@ Ex.
 > ruby locus_info.rb --infile mixtures/361_cau_id_mix_2_3_4_1000each.csv --outfile mixes_preprocessed/361_cau_id_mix_2_3_4_1000each_preprocessed.csv --aftable frequencies/361_cau.csv --ac
 ```
 
-### Filtering
-TODO
-
-### Model training
-TODO
-
-### Testing
-TODO
-
-## Notes
-
-### Weka
-TODO
+### Filtering and estimation
+```
+> java -jar MixtureMining.jar training_file test_file -f [AS/ASB/PC] -n features_to_keep -c BS
+```
 
 ### Example data
 Example data taken from NIST genotype dataset and accompanying allele frequencies, available at http://www.cstl.nist.gov/strbase/NISTpop.htm
