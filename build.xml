@@ -86,7 +86,7 @@
           <arg line="driver.rb 2 4 1000 -n 5 -f ASB -c BS"/>
         </exec>
         <exec executable="ruby.exe" failonerror="true">
-          <arg line="driver.rb 2 4 1000 -n 5 -f ASB -c BS"/>
+          <arg line="driver.rb 2 4 1000 -n 10 -f ASB -c BS"/>
         </exec>
         <exec executable="ruby.exe" failonerror="true">
           <arg line="driver.rb 2 5 1000 -n 2 -f ASB -c BS"/>
@@ -95,7 +95,7 @@
           <arg line="driver.rb 2 5 1000 -n 5 -f ASB -c BS"/>
         </exec>
         <exec executable="ruby.exe" failonerror="true">
-          <arg line="driver.rb 2 5 1000 -n 5 -f ASB -c BS"/>
+          <arg line="driver.rb 2 5 1000 -n 10 -f ASB -c BS"/>
         </exec>
         <exec executable="ruby.exe" failonerror="true">
           <arg line="driver.rb 2 4 100 -n 2 -f PC -c BS"/>

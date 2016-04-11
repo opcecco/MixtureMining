@@ -178,7 +178,7 @@ public class MMApp {
 					evaluator = new Evaluation(reduced_data_training);
 					evaluator.evaluateModel(classifier, reduced_data_testing);
 //					results.println(evaluator.toClassDetailsString());
-//					results.println(evaluator.toMatrixString());
+					results.println(evaluator.toMatrixString());
 //					results.println(evaluator.toSummaryString());
 					for (int j = 0; j < reduced_data_testing.numClasses(); j++) {
 						results.println(reduced_data_testing.classAttribute().value(j) 
