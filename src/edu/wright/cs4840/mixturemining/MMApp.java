@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 
 import javax.swing.JFrame;
 
@@ -76,6 +77,8 @@ public class MMApp {
 			    BufferedWriter bw = new BufferedWriter(fw);
 			    PrintWriter results = new PrintWriter(bw))
 		{
+			results.println("====Test Run====" + new Date().toString());
+			results.println();
 			System.out.println("Loading training file: " + trainFile.getPath());
 			System.out.println("Loading testing file: " + testFile.getPath());
 			if (trainFile.exists() && testFile.exists()) {
@@ -213,6 +216,7 @@ public class MMApp {
 			        System.err.println("Evaluation failed. Reason: " + exp.getMessage());
 				}
 			}
+			results.println();
 		} catch (IOException e) {
 	        System.err.println("File write failed. Reason: " + e.getMessage());
 		}
