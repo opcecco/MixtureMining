@@ -25,7 +25,10 @@ The MixtureMining project is intended to explore methods for estimating/inferrin
 * [Ruby interpreter](https://www.ruby-lang.org/en/)
   * Required Gems (install using 'gem install <gem_name>')
     * getopt
-* JRE 1.8
+* JRE 1.8+ (for running)
+* JDK 1.8+ (for building)
+* Apache Ant (for building)
+
 
 ## Build instructions
 * Preprocessing:
