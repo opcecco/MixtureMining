@@ -183,7 +183,7 @@ public class MMApp {
 					for (int j = 0; j < reduced_data_testing.numClasses(); j++) {
 						results.println(reduced_data_testing.classAttribute().value(j) 
 								+ " "
-								+ evaluator.truePositiveRate(j)
+								+ (evaluator.truePositiveRate(j) * 100)
 								+ "% true positive rate");
 					}
 					if (showCurve) {
